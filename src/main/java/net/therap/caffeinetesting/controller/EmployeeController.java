@@ -13,7 +13,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -35,7 +34,9 @@ public class EmployeeController {
 
     @PostMapping
     public ResponseEntity<Employee> save(@RequestBody Employee employee) {
-        return new ResponseEntity<>(employeeRepository.save(employee), HttpStatus.OK);
+        employee.setStatus("Active");
+        Employee savedEmployee = employeeRepository.save(employee);
+        return new ResponseEntity<>(savedEmployee, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
@@ -51,6 +52,7 @@ public class EmployeeController {
                                                    @RequestBody Employee employeeDetails) {
         Optional<Employee> employee = employeeRepository.findById(id);
         employee.get().setName(employeeDetails.getName());
+        employee.get().setStatus("Active");
         final Employee updatedEmployee = employeeRepository.save(employee.get());
         return ResponseEntity.ok(updatedEmployee);
     }
@@ -62,6 +64,6 @@ public class EmployeeController {
         if (employee.isPresent()) {
             employeeRepository.delete(employee.get());
         }
-        return new ResponseEntity<HttpStatus>(HttpStatus.NO_CONTENT);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
